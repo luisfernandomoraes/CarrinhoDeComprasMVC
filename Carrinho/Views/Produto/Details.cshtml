@@ -1,0 +1,45 @@
+﻿@model Carrinho.Models.Produto
+
+@{
+    ViewBag.Title = "Details";
+}
+<script>
+    angular.module("carrinhoApp").controller("produtoDetailsController", function($scope) {
+        $scope.produto = @(Html.ToJson(Model));
+    });
+</script>
+<h2>Details</h2>
+
+<div ng-controller="produtoDetailsController">
+    <h4>Produto</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            Nome:
+        </dt>
+
+        <dd ng-bind="produto.nome">
+        </dd>
+
+        <dt>
+            Descrição:
+        </dt>
+
+        <dd>
+            {{produto.descricao}}
+        </dd>
+
+        <dt>
+            Preço:
+        </dt>
+
+        <dd>
+            {{produto.preco}}
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
