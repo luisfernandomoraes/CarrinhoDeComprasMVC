@@ -3,8 +3,43 @@
 @{
     ViewBag.Title = "Index";
 }
-
+<script>
+    angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
+        //http://jsfiddle.net/benfosterdev/UWLFJ/
+    });
+</script>
 <h2>Index</h2>
+<div ng-controller="Ctrl" class="table table-striped table-responsive">
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Descrição</th>
+                <th>Preco</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="contact in model.contacts" ng-include="getTemplate(contact)"></tr>
+        </tbody>
+    </table>
+
+    <script type="text/ng-template" id="display">
+        <td>{{contact.name}}</td>
+        <td>{{contact.age}}</td>
+        <td>
+            <button ng-click="editContact(contact)">Edit</button>
+        </td>
+    </script>
+    <script type="text/ng-template" id="edit">
+        <td><input type="text" ng-model="model.selected.name" /></td>
+        <td><input type="text" ng-model="model.selected.age" /></td>
+        <td>
+            <button ng-click="saveContact($index)">Save</button>
+            <button ng-click="reset()">Cancel</button>
+        </td>
+    </script>
+</div>
+
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -23,23 +58,24 @@
         <th></th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Nome)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Descricao)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Preco)
-        </td>
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.ID }) |
-            @Html.ActionLink("Details", "Details", new { id=item.ID }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.ID })
-        </td>
-    </tr>
-}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nome)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Descricao)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Preco)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
 
 </table>
