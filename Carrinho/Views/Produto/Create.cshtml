@@ -4,56 +4,44 @@
     ViewBag.Title = "Create";
 }
 <script>
-    angular.module("carrinhoApp").controller("produtoCreateController", function($scope) {
-        $scope.produto = @(Html.ToJson(Model));
+    angular.module("carrinhoApp").controller("produtoCreateController", function ($scope,$http) {
+        $scope.produto = { nome: '', descricao: '', preco: 0.0 };
+        console.log($scope.produto);
+        $scope.onClickAdd = function (produto) {
+            console.log(produto.nome);
+            console.log(produto.descricao);
+            console.log(produto.preco);
+
+            //Operações no client side
+            //....
+            //Manipulação e mais validações de dados.
+            $http.post("/Produto/Create", produto).success(function (data) {
+                delete $scope.contato;
+                $scope.contatoForm.$setPristine();
+            });
+        }
     });
 </script>
-<h2>Create</h2>
 
-
-@using (Html.BeginForm()) 
-{
-    @Html.AntiForgeryToken()
-    
-    <div class="form-horizontal">
-        <h4>Produto</h4>
-        <hr />
-        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.Nome, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Nome, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Nome, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Descricao, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Descricao, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Descricao, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            <input type="text" class="form-control text-box single-line" id="Nome" value="" />
-            @Html.LabelFor(model => model.Preco, htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Preco, new {htmlAttributes = new {@class = "form-control"}})
-                @Html.ValidationMessageFor(model => model.Preco, "", new {@class = "text-danger"})
-            </div>
-        </div>
-
-        <div class="form-group">
-            <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Adicionar" class="btn btn-default" />
-            </div>
-        </div>
+<div ng-controller="produtoCreateController">
+    <h2>Create</h2>
+    {{produto}}
+    <form class="ng-dirty ng-valid" name="produtoForm">
+        <input class="form-control" name="nome" type="text" ng-model="produto.nome" placeholder="Nome" ng-required="true" ng-minlength="5" />
+        <br />
+        <input class="form-control" type="text" name="descricao" ng-model="produto.descricao" placeholder="Descrição" ng-required="true" ng-minlength="5" />
+        <br />
+        <input class="form-control" type="number" name="preco" placeholder="Preço" ng-model="produto.preco" ng-required="true" />
+    </form>
+    <br />
+    <div ng-show="produtoForm.nome.$error.required && produtoForm.nome.$dirty" class="alert alert-danger">
+        Por favor, preencha o campo Nome!
     </div>
-}
-
-<div>
-    @Html.ActionLink("Back to List", "Index")
+    <div ng-show="produtoForm.nome.$error.minlength && produtoForm.nome.$dirty" class="alert alert-danger">
+        O campo 'Nome' deve ter no minimo 5 caracteres.
+    </div>
+    <br />
+    <button class="btn btn-primary" ng-click="onClickAdd(produto)">Adicionar Contato</button>
 </div>
 
 @section Scripts {
