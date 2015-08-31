@@ -1,81 +1,170 @@
 ﻿@model IEnumerable<Carrinho.Models.Produto>
-
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Carrinho de Compras.";
 }
+<script src="/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+
 <script>
+    var editor; // use a global for the submit and return data rendering in the examples
     angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
-        //http://jsfiddle.net/benfosterdev/UWLFJ/
+        $scope.produtos = @(Html.ToJson(Model));
+        $scope.carrinho = @Html.ToJson(ViewData["MyVariable"]);
+        console.log($scope.produtos);
     });
+
+    // Activate an inline edit on click of a table cell
+    $('#produtosTable').on( 'click', 'tbody td:not(:first-child)', function (e) {
+        editor.inline(this);
+    } );
 </script>
-<h2>Index</h2>
-<div ng-controller="Ctrl" class="table table-striped table-responsive">
-    <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Descrição</th>
-                <th>Preco</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="contact in model.contacts" ng-include="getTemplate(contact)"></tr>
-        </tbody>
-    </table>
-
-    <script type="text/ng-template" id="display">
-        <td>{{contact.name}}</td>
-        <td>{{contact.age}}</td>
-        <td>
-            <button ng-click="editContact(contact)">Edit</button>
-        </td>
-    </script>
-    <script type="text/ng-template" id="edit">
-        <td><input type="text" ng-model="model.selected.name" /></td>
-        <td><input type="text" ng-model="model.selected.age" /></td>
-        <td>
-            <button ng-click="saveContact($index)">Save</button>
-            <button ng-click="reset()">Cancel</button>
-        </td>
-    </script>
+<div class="container-fluid" ng-controller="produtoIndexController">
+    <div class="row">
+        <div class="col-lg-6">
+            <h3>Produtos</h3>
+            <!--Tabela com os produtos-->
+            <table id="produtosTable" class="display table table-hover">
+                <thead>
+                    <tr>
+                        <td>Nome</td>
+                        <td>Descrição</td>
+                        <td>Preço</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="p in produtos">
+                        <td>{{p.nome}}</td>
+                        <td>{{p.descricao}}</td>
+                        <td>{{p.preco}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-6">
+            Container Right
+        </div>
+    </div>
 </div>
+@*@model IEnumerable<Carrinho.Models.Produto>
 
-
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Nome)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Descricao)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Preco)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descricao)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Preco)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
-                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
-            </td>
-        </tr>
+    @{
+        ViewBag.Title = "Index";
     }
+    <script>
+        angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
+            //http://jsfiddle.net/benfosterdev/UWLFJ/
+            $scope.produtos = @(Html.ToJson(Model));
+            $scope.produtos.forEach(function(p) {
+                p["selected"] = {};
+            });
+            // gets the template to ng-include for a table row / item
+            $scope.getTemplate = function (produto) {
+                if ($scope.produtos.selected === undefined){
+                    $scope.produtos.selected = produto;
+                    return 'edit';
+                }
+                if (produto.id === $scope.produtos.selected.id) return 'edit';
+                else return 'display';
+            };
 
-</table>
+            $scope.editProduto = function (produto) {
+                $scope.produtos.selected = angular.copy(produto);
+            };
+
+            $scope.saveProduto = function (idx) {
+                console.log("Salvando produto em memoria.");
+                $scope.produtos[idx] = angular.copy($scope.produtos.selected);
+                $scope.reset();
+            };
+
+            $scope.reset = function () {
+                $scope.produtos.selected = {};
+            };
+
+            $scope.saveProdutoInDB = function() {
+                $scope.produtos.forEach(function(p) {
+
+                    $http.post("/Produto/Edit", p).success = function(p) {
+                        console.log("Produto "+p.nome+" salva com sucesso.");
+                    };
+                });
+
+            }
+        });
+    </script>
+    <h2>Index</h2>
+    <div ng-controller="produtoIndexController" class="table table-striped table-responsive">
+        {{produtos}}
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Descrição</th>
+                    <th>Preco</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="produto in produtos" ng-include="getTemplate(produto)"></tr>
+            </tbody>
+        </table>
+
+        <script type="text/ng-template" id="display">
+            <td>{{produto.nome}}</td>
+            <td>{{produto.descricao}}</td>
+            <td>{{produto.preco}}</td>
+            <td>
+                <button class="btn btn-default" ng-click="editProduto(produto)">Edit</button>
+            </td>
+        </script>
+        <script type="text/ng-template" id="edit">
+            <td><input class="form-control" type="text" ng-model="produtos.selected.nome" /></td>
+            <td><input class="form-control" type="text" ng-model="produtos.selected.descricao" /></td>
+            <td><input class="form-control" type="number" ng-model="produtos.selected.preco" /></td>
+            <td>
+                <button class="btn btn-default" ng-click="saveProduto($index)">Save</button>
+                <button class="btn btn-default" ng-click="reset()">Cancel</button>
+            </td>
+        </script>
+        <br/>
+        <hr/>
+        <button class="btn btn-info" ng-click="saveProdutoInDB()">Salvar Alterações</button>
+    </div>
+
+
+    @*<p>
+        @Html.ActionLink("Create New", "Create")
+    </p>
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Nome)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Descricao)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Preco)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Nome)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descricao)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Preco)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+                </td>
+            </tr>
+        }
+
+    </table>*@

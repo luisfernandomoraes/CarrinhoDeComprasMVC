@@ -13,7 +13,7 @@ namespace Carrinho
             Settings = new JsonSerializerSettings
             {
                 ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(),
-                TypeNameHandling = TypeNameHandling.Arrays
+                //TypeNameHandling = TypeNameHandling.Arrays
             };
         }
 
