@@ -3,44 +3,106 @@
     ViewBag.Title = "Carrinho de Compras.";
 }
 <script src="/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="/Scripts/bootstrap.min.js"></script>
+<script src="/Scripts/bootstrap-table.js"></script>
 
+<style>
+    #btnAdicionar {
+        margin-bottom: -400px;
+    }
+
+    .jumbotron {
+        top: 20px;
+        width: auto;
+        height: 400px;
+    }
+
+    #headerTable {
+        top: -30px;
+    }
+
+    table thead {
+        font-weight: bold;
+    }
+</style>
 <script>
     var editor; // use a global for the submit and return data rendering in the examples
     angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
         $scope.produtos = @(Html.ToJson(Model));
-        $scope.carrinho = @Html.ToJson(ViewData["MyVariable"]);
-        console.log($scope.produtos);
+        $scope.carrinho = [];
+
+        $scope.addCarrinho = function() {
+            var selecionados = $scope.produtos.filter ( function(item ){return item.selecionado;}  );
+            for (var i = 0; i < selecionados.length; i++) {
+                var itemIndex = $scope.carrinho.indexOf(selecionados[i]);
+                var itemValue;
+                if (itemIndex === -1) {
+                    itemValue = selecionados[i];
+                    itemValue.qtd = 1;
+                    $scope.carrinho.push(itemValue);
+                } else {
+                    itemValue = selecionados[i];
+                    itemValue.qtd++;
+                    $scope.carrinho[itemIndex] = itemValue;
+
+                }
+                console.log(selecionados[i]);
+            }
+        }
     });
 
-    // Activate an inline edit on click of a table cell
-    $('#produtosTable').on( 'click', 'tbody td:not(:first-child)', function (e) {
-        editor.inline(this);
-    } );
 </script>
 <div class="container-fluid" ng-controller="produtoIndexController">
     <div class="row">
-        <div class="col-lg-6">
-            <h3>Produtos</h3>
+        <div class="col-lg-5 jumbotron">
+            <h2 id="headerTable">Produtos</h2>
+            <hr />
+            <br/>
+            <br/>
             <!--Tabela com os produtos-->
-            <table id="produtosTable" class="display table table-hover">
+            <table id="produtosTable" class="table table-striped" data-click-to-select="true" data-select-item-name="radioName">
+                <thead>
+                <tr>
+                    <td>Nome</td>
+                    <td>Descrição</td>
+                    <td>Preço</td>
+                </tr>
+                </thead>
+                <tbody>
+                <tr ng-repeat="p in produtos">
+                    <td><input type="checkbox" ng-model="p.selecionado"/></td>
+                    <td>{{p.nome}}</td>
+                    <td>{{p.descricao}}</td>
+                    <td>{{p.preco}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <br/>
+            <br/>
+        </div>
+        <div id="centerDiv" class="col-lg-2 text-center">
+            <button id="btnAdicionar" class="btn btn-primary" ng-click="addCarrinho()">Adicionar -></button>
+        </div>
+        <div class="col-lg-5 jumbotron">
+            <h2>Carrinho de Compras</h2>
+            <hr/>
+            <br />
+            <br />
+            <!--Tabela que representa o carrinho de compras-->
+            <table class="table table-striped">
                 <thead>
                     <tr>
-                        <td>Nome</td>
-                        <td>Descrição</td>
-                        <td>Preço</td>
+                        <td>Adicionados</td>
+                        <td>Quantidade</td>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="p in produtos">
-                        <td>{{p.nome}}</td>
-                        <td>{{p.descricao}}</td>
-                        <td>{{p.preco}}</td>
+                    <tr ng-repeat="c in carrinho">
+                        <td>{{c.nome}}</td>
+                        <td>{{c.qtd}}</td>
                     </tr>
                 </tbody>
             </table>
-        </div>
-        <div class="col-lg-6">
-            Container Right
         </div>
     </div>
 </div>

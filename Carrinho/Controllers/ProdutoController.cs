@@ -10,6 +10,7 @@ using Carrinho.Models;
 
 namespace Carrinho.Controllers
 {
+
     public class ProdutoController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
@@ -19,6 +20,7 @@ namespace Carrinho.Controllers
         {
             return View(db.Produtoes.ToList());
         }
+
 
         // GET: Produto/Details/5
         public ActionResult Details(int? id)
