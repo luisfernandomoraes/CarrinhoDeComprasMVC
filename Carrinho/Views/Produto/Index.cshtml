@@ -24,6 +24,12 @@
     table thead {
         font-weight: bold;
     }
+
+    .btnRodape {
+        top: -20px;
+        float: right;
+        width: 150px;
+    }
 </style>
 <script>
     var editor; // use a global for the submit and return data rendering in the examples
@@ -38,17 +44,26 @@
                 var itemValue;
                 if (itemIndex === -1) {
                     itemValue = selecionados[i];
-                    itemValue.qtd = 1;
+                    itemValue.quantidade = 1;
                     $scope.carrinho.push(itemValue);
                 } else {
                     itemValue = selecionados[i];
-                    itemValue.qtd++;
+                    itemValue.quantidade++;
                     $scope.carrinho[itemIndex] = itemValue;
 
                 }
                 console.log(selecionados[i]);
             }
         }
+
+        $scope.salvarCompras = function() {
+            for (var i = 0; i < $scope.carrinho.length; i++) {
+                var compra = $scope.carrinho[i];
+                $http.post("../Compra/Create", compra).success(function() {
+                    delete $scope.carrinho;
+                });
+            }
+        };
     });
 
 </script>
@@ -57,52 +72,52 @@
         <div class="col-lg-5 jumbotron">
             <h2 id="headerTable">Produtos</h2>
             <hr />
-            <br/>
-            <br/>
+            <br />
+            <br />
             <!--Tabela com os produtos-->
             <table id="produtosTable" class="table table-striped" data-click-to-select="true" data-select-item-name="radioName">
                 <thead>
-                <tr>
-                    <td>Nome</td>
-                    <td>Descrição</td>
-                    <td>Preço</td>
-                </tr>
+                    <tr>
+                        <td>Nome</td>
+                        <td>Descrição</td>
+                        <td>Preço</td>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="p in produtos">
-                    <td><input type="checkbox" ng-model="p.selecionado"/></td>
-                    <td>{{p.nome}}</td>
-                    <td>{{p.descricao}}</td>
-                    <td>{{p.preco}}</td>
-                </tr>
+                    <tr ng-repeat="p in produtos">
+                        <td><input type="checkbox" ng-model="p.selecionado" /></td>
+                        <td>{{p.nome}}</td>
+                        <td>{{p.descricao}}</td>
+                        <td>{{p.preco}}</td>
+                    </tr>
                 </tbody>
             </table>
-            <br/>
-            <br/>
+            <button id="btnAtualizar" class="btn btn-info btnRodape">Atualizar</button>
         </div>
         <div id="centerDiv" class="col-lg-2 text-center">
-            <button id="btnAdicionar" class="btn btn-primary" ng-click="addCarrinho()">Adicionar -></button>
+            <button id="btnAdicionar" class="btn btn-primary" ng-click="addCarrinho()">Adicionar =></button>
         </div>
         <div class="col-lg-5 jumbotron">
             <h2>Carrinho de Compras</h2>
-            <hr/>
+            <hr />
             <br />
             <br />
             <!--Tabela que representa o carrinho de compras-->
             <table class="table table-striped">
                 <thead>
-                    <tr>
-                        <td>Adicionados</td>
-                        <td>Quantidade</td>
-                    </tr>
+                <tr>
+                    <td>Adicionados</td>
+                    <td>Quantidade</td>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="c in carrinho">
-                        <td>{{c.nome}}</td>
-                        <td>{{c.qtd}}</td>
-                    </tr>
+                <tr ng-repeat="c in carrinho">
+                    <td>{{c.nome}}</td>
+                    <td>{{c.quantidade}}</td>
+                </tr>
                 </tbody>
             </table>
+            <button id="btnSalavar" class="btn btn-info btnRodape" ng-click="salvarCompras()">Salvar</button>
         </div>
     </div>
 </div>

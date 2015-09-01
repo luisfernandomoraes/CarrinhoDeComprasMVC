@@ -16,8 +16,8 @@
             //....
             //Manipulação e mais validações de dados.
             $http.post("/Produto/Create", produto).success(function (data) {
-                delete $scope.contato;
-                $scope.contatoForm.$setPristine();
+                delete $scope.produto;
+                $scope.produtoForm.$setPristine();
             });
         }
     });

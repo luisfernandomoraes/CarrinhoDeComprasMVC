@@ -23,6 +23,7 @@ namespace Carrinho.Models
         public ApplicationDbContext()
             : base("DefaultConnection", throwIfV1Schema: false)
         {
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<ApplicationDbContext>());
         }
 
         public static ApplicationDbContext Create()
@@ -31,5 +32,7 @@ namespace Carrinho.Models
         }
 
         public System.Data.Entity.DbSet<Carrinho.Models.Produto> Produtoes { get; set; }
+
+        public System.Data.Entity.DbSet<Carrinho.Models.Compra> Compras { get; set; }
     }
 }
