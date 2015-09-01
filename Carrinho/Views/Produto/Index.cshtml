@@ -15,6 +15,7 @@
         top: 20px;
         width: auto;
         height: 400px;
+        box-shadow: 1px 1px 4px blue;
     }
 
     #headerTable {
@@ -33,12 +34,16 @@
 </style>
 <script>
     var editor; // use a global for the submit and return data rendering in the examples
-    angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
-        $scope.produtos = @(Html.ToJson(Model));
+    angular.module("carrinhoApp").controller("produtoIndexController", function ($scope, $http) {
+        //$scope.produtos = @*@(Html.ToJson(Model))*@;
         $scope.carrinho = [];
-
-        $scope.addCarrinho = function() {
-            var selecionados = $scope.produtos.filter ( function(item ){return item.selecionado;}  );
+        $scope.atualizarProdutos = function () {
+            $http.get('../Produto/GetAll').success(function (response) {
+                $scope.produtos = response;
+            });
+        }
+        $scope.addCarrinho = function () {
+            var selecionados = $scope.produtos.filter(function (item) { return item.selecionado; });
             for (var i = 0; i < selecionados.length; i++) {
                 var itemIndex = $scope.carrinho.indexOf(selecionados[i]);
                 var itemValue;
@@ -56,10 +61,10 @@
             }
         }
 
-        $scope.salvarCompras = function() {
+        $scope.salvarCompras = function () {
             for (var i = 0; i < $scope.carrinho.length; i++) {
                 var compra = $scope.carrinho[i];
-                $http.post("../Compra/Create", compra).success(function() {
+                $http.post("../Compra/Create", compra).success(function () {
                     delete $scope.carrinho;
                 });
             }
@@ -75,6 +80,7 @@
             <br />
             <br />
             <!--Tabela com os produtos-->
+
             <table id="produtosTable" class="table table-striped" data-click-to-select="true" data-select-item-name="radioName">
                 <thead>
                     <tr>
@@ -92,7 +98,7 @@
                     </tr>
                 </tbody>
             </table>
-            <button id="btnAtualizar" class="btn btn-info btnRodape">Atualizar</button>
+            <button id="btnAtualizar" class="btn btn-info btnRodape" ng-click="atualizarProdutos()">Atualizar</button>
         </div>
         <div id="centerDiv" class="col-lg-2 text-center">
             <button id="btnAdicionar" class="btn btn-primary" ng-click="addCarrinho()">Adicionar =></button>
@@ -105,16 +111,16 @@
             <!--Tabela que representa o carrinho de compras-->
             <table class="table table-striped">
                 <thead>
-                <tr>
-                    <td>Adicionados</td>
-                    <td>Quantidade</td>
-                </tr>
+                    <tr>
+                        <td>Adicionados</td>
+                        <td>Quantidade</td>
+                    </tr>
                 </thead>
                 <tbody>
-                <tr ng-repeat="c in carrinho">
-                    <td>{{c.nome}}</td>
-                    <td>{{c.quantidade}}</td>
-                </tr>
+                    <tr ng-repeat="c in carrinho">
+                        <td>{{c.nome}}</td>
+                        <td>{{c.quantidade}}</td>
+                    </tr>
                 </tbody>
             </table>
             <button id="btnSalavar" class="btn btn-info btnRodape" ng-click="salvarCompras()">Salvar</button>

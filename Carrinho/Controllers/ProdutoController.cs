@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using Carrinho.Models;
+using Newtonsoft.Json;
 
 namespace Carrinho.Controllers
 {
@@ -114,6 +115,12 @@ namespace Carrinho.Controllers
             db.Produtoes.Remove(produto);
             db.SaveChanges();
             return RedirectToAction("Index");
+        }
+        
+        public string GetAll()
+        {
+            var settings = new JsonSerializerSettings { ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver(), };
+            return JsonConvert.SerializeObject(db.Produtoes.ToList(), Formatting.None, settings);
         }
 
         protected override void Dispose(bool disposing)
