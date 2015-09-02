@@ -7,6 +7,8 @@
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
     @Scripts.Render("~/bundles/angular")
+    <script src="/Scripts/sweetalert.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/Content/sweetalert.css">
     <script>
         angular.module("carrinhoApp", []);
     </script>
@@ -21,6 +23,7 @@
                     <span class="icon-bar"></span>
                 </button>
                 @Html.ActionLink("Carrinho de Compras MVC", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                @Html.ActionLink("Cadastrar Produto", "Create", "Produto", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 @*

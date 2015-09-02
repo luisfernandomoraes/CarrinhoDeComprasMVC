@@ -2,10 +2,10 @@
 @{
     ViewBag.Title = "Carrinho de Compras.";
 }
-<script src="/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="/Scripts/jquery-1.8.3.min.js" type="text/javascript"></script>
 <script src="/Scripts/bootstrap.min.js"></script>
 <script src="/Scripts/bootstrap-table.js"></script>
-
+<link rel="stylesheet" type="text/css" href="/Content/estilo.css">
 <style>
     #btnAdicionar {
         margin-bottom: -400px;
@@ -13,8 +13,8 @@
 
     .jumbotron {
         top: 20px;
-        width: auto;
-        height: 400px;
+        width: 400px;
+        height: 600px;
         box-shadow: 1px 1px 4px blue;
     }
 
@@ -33,17 +33,32 @@
     }
 </style>
 <script>
-    var editor; // use a global for the submit and return data rendering in the examples
-    angular.module("carrinhoApp").controller("produtoIndexController", function ($scope, $http) {
-        //$scope.produtos = @*@(Html.ToJson(Model))*@;
+    //Declaração do meu controller 'produtoIndexController', para o meu modulo 'carrinhoApp' declarado previamente no arquivo _Layout.cshtml
+    angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
+        //Descomentando a linha a baixo, eu estarei usando o objeto de modelo passado pelo metodo 'Index' da do meu controller 'ProdutoController' e atravéz do meu metodo 'ToJson' de extenção, na classe 'HtmlHelperExtensions'converterei para um array de objetos Json, para posteriormente ser manipulado pelo AngularJS
+        //$scope.produtos = @(Html.ToJson(Model));
+
+        //Variavel sendo instaniada no meu '$scope'. Ela representará o modelo de dado "carrinho de compras" onde o usuario adicionará os produtos e suas quantidades. Uma sugestão de estudo, implementar o custo da compra levando em consideração o preço e a quantidade de todos os produtos adicionados no carrinho.
         $scope.carrinho = [];
-        $scope.atualizarProdutos = function () {
-            $http.get('../Produto/GetAll').success(function (response) {
+
+        //----------------- Métodos-------------------------------------
+
+        /*
+        * Esse método é chamado para, popular a tabela de produtos do lado esquerdo da pagina, sendo feito isso a partir de uma chamada ajax, onde é retornado um json contendo a lista de produtos do meu banco de dados.
+        */
+        $scope.atualizarProdutos = function() {
+            $http.get('../Produto/GetAll').success(function(response) {
                 $scope.produtos = response;
             });
         }
-        $scope.addCarrinho = function () {
-            var selecionados = $scope.produtos.filter(function (item) { return item.selecionado; });
+        //--------------------------------------------------------------
+        /*
+        * Esse método é utilizado para realizar a adição de um ou mais produtos na variavel '$scope.carrinho'.(que representa o carrinho de compras).
+        */
+        $scope.addCarrinho = function() {
+            //Aqui está sendo usado um filtro para buscar todos os itens selecionados no tabela de produtos.
+            var selecionados = $scope.produtos.filter(function(item) { return item.selecionado; });
+            //Uma vez com a lista de todos os produtos selecionados, atravez de um for eu realizo a lógica para quando um item ja estiver adicionado ao carrinho, incrementar apenas a quantidade e não duplicar o registro.
             for (var i = 0; i < selecionados.length; i++) {
                 var itemIndex = $scope.carrinho.indexOf(selecionados[i]);
                 var itemValue;
@@ -60,42 +75,50 @@
                 console.log(selecionados[i]);
             }
         }
-
-        $scope.salvarCompras = function () {
+        //--------------------------------------------------------------
+        /*
+        * Esse método realiza o 'post' da lista de produtos e suas quantidades do carrinho de compras, para o servidor.
+        */
+        $scope.salvarCompras = function() {
             for (var i = 0; i < $scope.carrinho.length; i++) {
                 var compra = $scope.carrinho[i];
-                $http.post("../Compra/Create", compra).success(function () {
+                //Atraves do '$http' que encapsula as chamadas ou verbos do protocolo, é feita a chamada passando os objetos no formato Json ( JavaScript Object Notation).
+                $http.post("../Compra/Create", compra).success(function() {
+                    //Caso a chamado execute com sucesso ('.sucess), eu deleto o array de objetos para limpar a tabela.
                     delete $scope.carrinho;
+                    //Alerta personalidazo, utilizando o projeto SweetAlert. (http://t4t5.github.io/sweetalert/)
+                    swal({ title: "Sucesso!", text: "Compra efetuada com sucesso!", type: "info", confirmButtonText: "OK" });
                 });
             }
         };
     });
-
 </script>
+<!--atravéz da diretiva 'ng-controller'  eu informo ao angular que todos os meus elementos dessa div, represetam a view do meu produtoIndexController-->
 <div class="container-fluid" ng-controller="produtoIndexController">
     <div class="row">
         <div class="col-lg-5 jumbotron">
             <h2 id="headerTable">Produtos</h2>
-            <hr />
-            <br />
-            <br />
+            <hr/>
+            <br/>
+            <br/>
             <!--Tabela com os produtos-->
 
-            <table id="produtosTable" class="table table-striped" data-click-to-select="true" data-select-item-name="radioName">
+            <table id="produtosTable" class="table table-striped">
                 <thead>
-                    <tr>
-                        <td>Nome</td>
-                        <td>Descrição</td>
-                        <td>Preço</td>
-                    </tr>
+                <tr>
+                    <td>Nome</td>
+                    <td>Descrição</td>
+                    <td>Preço</td>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="p in produtos">
-                        <td><input type="checkbox" ng-model="p.selecionado" /></td>
-                        <td>{{p.nome}}</td>
-                        <td>{{p.descricao}}</td>
-                        <td>{{p.preco}}</td>
-                    </tr>
+                <!--Aqui com o "forEach" do angular, eu prencho a tabela com os daos que possuo na minha variavel produto-->
+                <tr ng-repeat="p in produtos">
+                    <td><input type="checkbox" ng-model="p.selecionado"/></td>
+                    <td>{{p.nome}}</td>
+                    <td>{{p.descricao}}</td>
+                    <td>{{p.preco}}</td>
+                </tr>
                 </tbody>
             </table>
             <button id="btnAtualizar" class="btn btn-info btnRodape" ng-click="atualizarProdutos()">Atualizar</button>
@@ -105,28 +128,32 @@
         </div>
         <div class="col-lg-5 jumbotron">
             <h2>Carrinho de Compras</h2>
-            <hr />
-            <br />
-            <br />
+            <hr/>
+            <br/>
+            <br/>
             <!--Tabela que representa o carrinho de compras-->
             <table class="table table-striped">
                 <thead>
-                    <tr>
-                        <td>Adicionados</td>
-                        <td>Quantidade</td>
-                    </tr>
+                <tr>
+                    <td>Adicionados</td>
+                    <td>Quantidade</td>
+                </tr>
                 </thead>
                 <tbody>
-                    <tr ng-repeat="c in carrinho">
-                        <td>{{c.nome}}</td>
-                        <td>{{c.quantidade}}</td>
-                    </tr>
+                <tr ng-repeat="c in carrinho">
+                    <td>{{c.nome}}</td>
+                    <!--Usando o input para o usuário poder informar a quantidade do produto adicionado.-->
+                    <td><input ng-model="c.quantidade"/></td>
+                </tr>
                 </tbody>
             </table>
+            <!--Aqui eu adiciono uma chamada para o metodo do meu controller 'salvarCompras'.-->
+            <!--Observação: Atenção a sintax, para não confundir 'click' com 'ng-click'.-->
             <button id="btnSalavar" class="btn btn-info btnRodape" ng-click="salvarCompras()">Salvar</button>
         </div>
     </div>
 </div>
+@*------------------ A baixo o código do primeiro exemplo usando angular ---------------------*@
 @*@model IEnumerable<Carrinho.Models.Produto>
 
     @{
@@ -212,7 +239,7 @@
         <button class="btn btn-info" ng-click="saveProdutoInDB()">Salvar Alterações</button>
     </div>
 
-
+    @*------------------ Aqui a página usando razor normal---------------------*@
     @*<p>
         @Html.ActionLink("Create New", "Create")
     </p>

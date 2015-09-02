@@ -3,6 +3,8 @@
 @{
     ViewBag.Title = "Create";
 }
+<script src="/Scripts/sweetalert.min.js"></script> 
+<link rel="stylesheet" type="text/css" href="/Content/sweetalert.css">
 <script>
     angular.module("carrinhoApp").controller("produtoCreateController", function ($scope,$http) {
         $scope.produto = { nome: '', descricao: '', preco: 0.0 };
@@ -18,6 +20,7 @@
             $http.post("/Produto/Create", produto).success(function (data) {
                 delete $scope.produto;
                 $scope.produtoForm.$setPristine();
+                swal({ title: "Sucesso!", text: "Adicionado com sucesso!", type: "info", confirmButtonText: "Cool" });
             });
         }
     });
@@ -41,7 +44,7 @@
         O campo 'Nome' deve ter no minimo 5 caracteres.
     </div>
     <br />
-    <button class="btn btn-primary"  ng-click="onClickAdd(produto)">Adicionar Contato</button>
+    <button class="btn btn-primary"  ng-click="onClickAdd(produto)">Adicionar Produto</button>
 </div>
 
 @section Scripts {
