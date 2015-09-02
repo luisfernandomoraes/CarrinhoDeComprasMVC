@@ -2,10 +2,9 @@
 @{
     ViewBag.Title = "Carrinho de Compras.";
 }
-<script src="/Scripts/jquery-1.8.3.min.js" type="text/javascript"></script>
 <script src="/Scripts/bootstrap.min.js"></script>
 <script src="/Scripts/bootstrap-table.js"></script>
-<link rel="stylesheet" type="text/css" href="/Content/estilo.css">
+
 <style>
     #btnAdicionar {
         margin-bottom: -400px;
@@ -14,8 +13,8 @@
     .jumbotron {
         top: 20px;
         width: 400px;
-        height: 600px;
-        box-shadow: 1px 1px 4px blue;
+        height: auto;
+        box-shadow: 1px 1px 4px black;
     }
 
     #headerTable {
@@ -35,7 +34,7 @@
 <script>
     //Declaração do meu controller 'produtoIndexController', para o meu modulo 'carrinhoApp' declarado previamente no arquivo _Layout.cshtml
     angular.module("carrinhoApp").controller("produtoIndexController", function($scope, $http) {
-        //Descomentando a linha a baixo, eu estarei usando o objeto de modelo passado pelo metodo 'Index' da do meu controller 'ProdutoController' e atravéz do meu metodo 'ToJson' de extenção, na classe 'HtmlHelperExtensions'converterei para um array de objetos Json, para posteriormente ser manipulado pelo AngularJS
+        //Descomentando a linha a baixo, eu estarei usando o objeto de modelo passado pelo metodo 'Index' da do meu controller 'ProdutoController' e atravéz do meu metodo 'ToJson' de extenção, na classe 'HtmlHelperExtensions'converterei para um array de objetos Json, para posteriormente ser manipulado pelo AngularJS.
         //$scope.produtos = @(Html.ToJson(Model));
 
         //Variavel sendo instaniada no meu '$scope'. Ela representará o modelo de dado "carrinho de compras" onde o usuario adicionará os produtos e suas quantidades. Uma sugestão de estudo, implementar o custo da compra levando em consideração o preço e a quantidade de todos os produtos adicionados no carrinho.
