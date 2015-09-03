@@ -91,6 +91,10 @@
                 });
             }
         };
+        //--------------------------------------------------------------
+        $scope.parseFloat = function (value) {
+            return parseFloat(value);
+        }
     });
 </script>
 <!--atravéz da diretiva 'ng-controller'  eu informo ao angular que todos os meus elementos dessa div, represetam a view do meu produtoIndexController-->
@@ -137,6 +141,7 @@
                 <tr>
                     <td>Adicionados</td>
                     <td>Quantidade</td>
+                    <td>Valor</td>
                 </tr>
                 </thead>
                 <tbody>
@@ -144,6 +149,7 @@
                     <td>{{c.nome}}</td>
                     <!--Usando o input para o usuário poder informar a quantidade do produto adicionado.-->
                     <td><input ng-model="c.quantidade"/></td>
+                    <td>{{(c.preco) * (c.quantidade)}}</td>
                 </tr>
                 </tbody>
             </table>
